@@ -29,7 +29,6 @@ void ct_pt_matrix_mul_test(){
     CKKSEncoder encoder(context);
     Evaluator evaluator(context);
     size_t slot_count = encoder.slot_count();
-    cout <<slot_count<<endl;
 
     struct timeval tstart1, tend1;
 
@@ -37,7 +36,6 @@ void ct_pt_matrix_mul_test(){
     int num_X = 256;
     int num_row = 128;
     int num_col = 768;
-    cout <<"Number of matrices in one batch = "<<num_X<<endl;
     vector<vector<vector<double>>> input_x(num_X,vector<vector<double>>(num_row, vector<double>(num_col,0)));
     for (int i = 0; i < num_X; ++i){
         for (int j = 0 ; j < num_row ; ++j){
@@ -52,56 +50,16 @@ void ct_pt_matrix_mul_test(){
 
     //encode + encrypt
     vector<Ciphertext> enc_ecd_x = batch_input(input_x, num_X, num_row, num_col, scale, context,public_key);
-/*
-    #pragma omp parallel for
 
-    for (int i = 0; i < num_col; ++i) {
-        for (int j = 0; j < 10; ++j){
-            evaluator.mod_switch_to_next_inplace(enc_ecd_x[i]);
-        }
-    }
-*/
     cout <<"encode and encrypt X. "<<endl;
     cout <<"Modulus chain index for enc x: "<< context.get_context_data(enc_ecd_x[0].parms_id())->chain_index()<<endl;
-
-
-    /*
-    //decrypt
-    
-
-    for (int i = 0; i < num_col; ++i){
-        Plaintext plain_result;
-        decryptor.decrypt(enc_ecd_x[i], plain_result);
-        vector<double> result;
-        encoder.decode(plain_result, result);
-        cout <<"decrypt + decode result of "<<i+1<<"-th ciphertext: "<<endl;
-        for (int ind = 0 ; ind < 10 ; ++ind){
-            cout <<result[ind]<<" ";
-        }
-        cout <<"... ";
-        for (int ind = slot_count-10 ; ind < slot_count ; ++ind){
-            cout <<result[ind]<<" ";
-        }
-        cout <<endl;
-    }
-    */
 
     //construct W
     int col_W = 3072;
     vector<vector<double>> W(num_col, vector<double>(col_W, 1.0/128.0));
     cout <<"Matrix W size = "<<num_col <<" * "<<col_W<<endl;
 
-    /*
-    //encode W
-    vector<vector<Plaintext>> ecd_w(num_col,vector<Plaintext>(col_W));
-    for (int i = 0; i < num_col; ++i){
-        for (int j = 0 ; j < col_W ; ++j){
-            encoder.encode(W[i][j], scale, ecd_w[i][j]);
-        }
-    }
-    cout <<"encode W. "<<endl;
-    */
-    cout <<"Encrypted col-packing X * ecd W = Encrypted col-packing XW. "<<endl;
+    cout <<"Encrypted col-packing X * W = Encrypted col-packing XW. "<<endl;
 
     //matrix multiplication
     gettimeofday(&tstart1,NULL);
