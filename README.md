@@ -1,5 +1,8 @@
 # HE-based-non-polynomial-eval
 
+### Update in July
+* For comparison, we include slot-encoded CKKS matrix multiplication algorithm in PCMM_CKKS folder and its test file in test folder. 
+
 ### Dependencies
 * Mircosoft SEAL (attached in our thridparty folder)
 * OpenMP (for multi-thread test)
